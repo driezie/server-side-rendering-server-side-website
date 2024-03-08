@@ -1,0 +1,50 @@
+<%- include('./partials/head', 
+  { 
+    // HEAD data
+    title: playlist.title,
+    description: playlist.summary,
+    image: playlist.image
+  }) 
+%>
+<div class="container">
+
+  <%- include('./partials/buttons', { buttons: 
+    [
+      {
+          link: "/",
+          style: {
+              type: "playlist"
+          },
+          text: "Return to playlists",
+          icon: false,
+      }
+    ]
+   }) %>
+
+
+  <h1>
+    Playlist <%= playlist.title %>
+  </h1>
+  <p>
+    <%= playlist.summary %>
+  </p>
+
+  <%- include('./partials/buttons', { buttons: 
+    [
+      {
+          link: "#",
+          style: {
+              type: "playlist"
+          },
+          text: "Play playlist",
+          icon: true,
+      }
+    ]
+   }) %>
+
+
+
+</div>
+
+
+<%- include('./partials/foot') %>
