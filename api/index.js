@@ -99,7 +99,18 @@ app.get('/playlists', async (request, response) => {
 // Define route for playlist page using the :slug
 app.get('/:slug', async (request, response) => {
   try {
-    const API = `${apiUrl}/tm_playlist?filter={"slug":"${request.params.slug}"}&fields=title,description,slug,stories.tm_story_id.title,stories.tm_story_id.description,stories.tm_story_id.image,stories.tm_story_id.slug`;
+    const API = `${apiUrl}/tm_playlist?filter={"slug":"${request.params.slug}"}&fields=
+    title,
+    description,
+    slug,
+    
+    stories.tm_story_id.title,
+    stories.tm_story_id.summary,
+    stories.tm_story_id.image,
+    stories.tm_story_id.slug,
+
+    language_id.language, 
+    language_id.flag.id`;
     // Fetch playlist data and story data concurrently
     const [data] = await Promise.all([
       fetch(API).then(res => res.json()),
@@ -107,15 +118,15 @@ app.get('/:slug', async (request, response) => {
 
     const dataFinal = dataConverter(data)
 
-    console.log(API)
 
 
-    console.log(dataFinal[0]);
+
+    console.log(dataFinal[0].stories);
 
     response.render('playlist', {
       playlist: dataFinal[0],
       stories: dataFinal[0].stories || [], // Handle the case when 'stories' is undefined
-      // language: dataFinal[0].language_id.language,
+      language: dataFinal[0].language_id || [], // Handle the case when 'language' is undefined
     });
   } catch (error) {
     console.error(error);

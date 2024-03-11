@@ -8,48 +8,40 @@
 %>
 <div class="container">
 
-  <%- include('./partials/buttons', { 
-    buttons: 
-    [
-      {
-          link: "/playlists",
-          style: {
-              type: "primary"
-          },
-          text: "Return to playlists",
-          icon: false,
-      }
-    ]
-   }) %>
+  <div class="buttons">
+        
+    <a href="/playlists" class="button primary">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Return to playlists</span>
+    </a>
+</div>
 
 
   <h1>
-    Stories in <%= playlist.title %>
+    Story: <%= playlist.title %>
   </h1>
   <p>
     <%= playlist.description %>
   </p>
 
-  <div class="card-grid-1">
+  <div class="card-grid card-grid-1">
     <% stories.forEach(item => { %>
-      
-
-        <div class="card-story long-card">
+        <div class="card card-story">
           <img class="logo" src="https://fdnd-agency.directus.app/assets/<%= item.tm_story_id.image %>" alt="<%= item.tm_story_id.title %>">
           <div class="text-content">
             <div class="title-content">
               <h3><%= item.tm_story_id.title %></h3>
-              <img class="language" src="https://via.placeholder.com/16x12" alt="">
+              <img class="language" src="https://fdnd-agency.directus.app/assets/<%- language.flag.id %>" alt="">
             </div>
             <p>
-              <%= item.tm_story_id.description %>
+              <%= item.tm_story_id.summary %>
             </p>
 
             <div class="actions">
-              <div class="play">
+              <a href="<%= "/" + playlist.slug + "/" +item.tm_story_id.slug %></a>" class="play">
                 <img src="/svg/play.svg" alt="play button">
                 <span>3 min. 5 sec</span>
-              </div>
+              </a>
               <div class="additional-actions">
                 <a href="">
                   <img src="/svg/cloud-save.svg" alt="save">
