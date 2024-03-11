@@ -1,0 +1,36 @@
+<%- include('./partials/head', 
+  { 
+    // HEAD data
+    title: 'Home',
+    description: 'Welcome to the home page',
+    image: ''
+  }) 
+%>
+<div class="container">
+  <h1>
+    Playlists
+  </h1>
+  <div class="playlists">
+    <% playlist.forEach(item => { %>
+      <img src="https://fdnd-agency.directus.app/assets/<%= item.image %>" alt="<%= item.title %>">
+      <h2><%= item.title %></h2>
+
+      <%- include('./partials/buttons', { buttons: 
+        [
+          {
+              link: "/" + item.slug,
+              style: {
+                  type: "playlist"
+              },
+              text: "Open link",
+              icon: true,
+          }
+        ]
+       }) %>
+    <% }) %>
+  </div>
+
+</div>
+
+
+<%- include('./partials/foot') %>

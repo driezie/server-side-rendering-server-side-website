@@ -6,29 +6,64 @@
     image: ''
   }) 
 %>
-<div class="container">
-  <h1>
-    Playlists
-  </h1>
-  <div class="playlists">
-    <% playlist.forEach(item => { %>
-      <img src="https://fdnd-agency.directus.app/assets/<%= item.image %>" alt="<%= item.title %>">
-      <h2><%= item.title %></h2>
+<style>
 
-      <%- include('./partials/buttons', { buttons: 
-        [
-          {
-              link: "/" + item.slug,
-              style: {
-                  type: "playlist"
-              },
-              text: "Open link",
-              icon: true,
-          }
-        ]
-       }) %>
-    <% }) %>
+  .container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .left-side {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .button.lesson {
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+<div class="container">
+  <div class="left-side">
+    <img src="https://via.placeholder.com/150" alt="profile picture">
+    <h2>Driezie</h2>
+    <p>Joined: 2020</p>
   </div>
+  <div class="dashboard">
+    <h1>
+      Lessons
+    </h1>
+
+    <div class="buttons">
+        
+      <a href="/" class="button lesson">
+        <span>1.</span>
+        <span>Listening</span>   
+        <img src="/svg/music-note.svg" alt="">
+      </a>
+      
+      <a href="/" class="button lesson">
+        <span>2.</span>
+        <span>Locked</span>   
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+</div>
+    
+    <div class="playlists">
+      rguuoi
+    </div>
+  
+    <div class="stories">
+      rgui
+    </div>
+  </div>
+
+  <div class="right-side">
+
+  </div>
+
+  
 
 </div>
 

@@ -18,6 +18,31 @@ function dataConverter(request) {
   return request.data;
 }
 
+app.get('/', async (request, response) => {
+  try {
+    // Fetch story data and playlist data concurrently
+    const [playlistData, StoriesData] = await Promise.all([
+      fetch(apiUrl + '/tm_playlist').then(res => res.json()),
+      fetch(apiUrl + '/tm_story').then(res => res.json()),
+    ]);
+
+    console.log(dataConverter(playlistData));
+    console.log(dataConverter(StoriesData));
+
+    // Render index page with fetched data
+    response.render('index', {
+      playlist: dataConverter(playlistData),
+      stories: dataConverter(StoriesData),
+    });
+
+    
+  } catch (error) {
+    console.error(error);
+    response.status(500).send("Internal Server Error");
+  }
+}
+);
+
 // Define route for homepage
 app.get('/playlists', async (request, response) => {
   try {
@@ -29,7 +54,7 @@ app.get('/playlists', async (request, response) => {
     console.log(dataConverter(playlistData));
 
     // Render index page with fetched data
-    response.render('index', {
+    response.render('playlists', {
       playlist: dataConverter(playlistData),
     });
 
