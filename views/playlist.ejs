@@ -1,19 +1,20 @@
 <%- include('./partials/head', 
   { 
     // HEAD data
-    title: playlist.title,
-    description: playlist.summary,
-    image: playlist.image
+    title: 'Home',
+    description: 'Welcome to the home page',
+    image: ''
   }) 
 %>
 <div class="container">
 
-  <%- include('./partials/buttons', { buttons: 
+  <%- include('./partials/buttons', { 
+    buttons: 
     [
       {
           link: "/",
           style: {
-              type: "playlist"
+              type: "primary"
           },
           text: "Return to playlists",
           icon: false,
@@ -23,24 +24,33 @@
 
 
   <h1>
-    Playlist <%= playlist.title %>
+    Stories in <%= playlist.title %>
   </h1>
   <p>
-    <%= playlist.summary %>
+    <%= playlist.description %>
   </p>
 
-  <%- include('./partials/buttons', { buttons: 
-    [
-      {
-          link: "#",
-          style: {
-              type: "playlist"
-          },
-          text: "Play playlist",
-          icon: true,
-      }
-    ]
-   }) %>
+  <div class="story">
+    <% stories.forEach(item => { %>
+      <img src="https://fdnd-agency.directus.app/assets/<%= item.tm_story_id.image %>" alt="<%= item.tm_story_id.title %>">
+      <h2><%= item.tm_story_id.title %></h2>   
+      
+      <%- include('./partials/buttons', { 
+        buttons: 
+        [
+          {
+              link: "/" + playlist.slug + "/" +item.tm_story_id.slug,
+              style: {
+                  type: "primary"
+              },
+              text: "PLAY STORY",
+              icon: false,
+          }
+        ]
+       }) %>
+
+    <% }) %>
+  </div>
 
 
 

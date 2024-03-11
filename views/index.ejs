@@ -11,16 +11,14 @@
     Playlists
   </h1>
   <div class="playlists">
-    <% playlists.forEach(item => { %>
-      <a href="/playlist/<%= item.slug %>" class="playlist">
-        <img src="https://fdnd-agency.directus.app/assets/<%= item.image %>" alt="<%= item.title %>">
-        <h2><%= item.title %></h2>
-      </a>
+    <% playlist.forEach(item => { %>
+      <img src="https://fdnd-agency.directus.app/assets/<%= item.image %>" alt="<%= item.title %>">
+      <h2><%= item.title %></h2>
 
       <%- include('./partials/buttons', { buttons: 
         [
           {
-              link: "/playlist/" + item.slug,
+              link: "/" + item.slug,
               style: {
                   type: "playlist"
               },

@@ -15,7 +15,7 @@
     <div class="buttons">
         <% for (let i = 0; i < buttons.length; i++) { %>
             <a href="<%= buttons[i].link %>" class="button <%= buttons[i].style && buttons[i].style.type ? buttons[i].style.type : '' %>" <% if (buttons[i].style && buttons[i].style.link_type) { %> target="<%= buttons[i].style.link_type %>" <% } %>>
-                <span><%= i %> - <%= buttons[i].text %></span>
+                <span><%= buttons[i].text %></span>
                 <% if (buttons[i].style && buttons[i].style.custom) { %>
                     <i class="<%= buttons[i].style.custom %>"></i>
                 <% } else { %>

@@ -1,30 +1,17 @@
 {
   "name": "server-side-rendering",
   "version": "1.0.0",
-  "description": "Ontwerp en ontwikkel een server-side website voor een opdrachtgever.",
-  "main": "server.js",
-  "type": "module",
-  "directories": {
-    "doc": "docs"
-  },
+  "description": "Loading data from API and rendering it on the server side using EJS and Express",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "vercel dev"
   },
-  "keywords": [
-    "node",
-    "express",
-    "ejs"
-  ],
-  "author": "J.P. Sturkenboom <j.p.sturkenboom@hva.nl>",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/fdnd-task/server-side-rendering/issues"
-  },
-  "homepage": "https://github.com/fdnd-task/server-side-rendering#readme",
+  "author": "Driezie",
+  "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.3",
-    "ejs": "^3.1.8",
-    "express": "^4.18.3"
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "node-fetch": "^2.7.0",
+    "vercel": "^33.5.4"
   }
 }
