@@ -18,6 +18,13 @@ function dataConverter(request) {
   return request.data;
 }
 
+/*
+  Define route for favicon.ico to prevent the browser from making an additional request for the favicon
+*/
+app.get('/favicon.ico', (req, res) => {
+  res.status(204); // No content response
+});
+
 app.get('/', async (request, response) => {
   try {
     // Fetch story data and playlist data concurrently
@@ -31,8 +38,8 @@ app.get('/', async (request, response) => {
 
     // Render index page with fetched data
     response.render('index', {
-      playlist: dataConverter(playlistData),
-      stories: dataConverter(StoriesData),
+      // playlist: dataConverter(playlistData),
+      // stories: dataConverter(StoriesData),
     });
 
     
@@ -47,15 +54,15 @@ app.get('/', async (request, response) => {
 app.get('/playlists', async (request, response) => {
   try {
     // Fetch story data and playlist data concurrently
-    const [playlistData] = await Promise.all([
+    const [Data] = await Promise.all([
       fetch(apiUrl + '/tm_playlist').then(res => res.json()),
     ]);
 
-    console.log(dataConverter(playlistData));
+    console.log(dataConverter(Data));
 
     // Render index page with fetched data
     response.render('playlists', {
-      playlist: dataConverter(playlistData),
+      playlist: dataConverter(Data),
     });
 
     
@@ -65,26 +72,29 @@ app.get('/playlists', async (request, response) => {
   }
 });
 
-app.get('/stories', async (request, response) => {
-  try {
-    // Fetch story data and playlist data concurrently
-    const [StoriesData] = await Promise.all([
-      fetch(apiUrl + '/tm_story').then(res => res.json()),
-    ]);
+// app.get('/stories', async (request, response) => {
+//   try {
+//     // Fetch story data and playlist data concurrently
+//     const [StoriesData] = await Promise.all([
+//       fetch(apiUrl + '/tm_story').then(res => res.json()),
+//     ]);
 
-    console.log(dataConverter(StoriesData));
+//     console.log(dataConverter(StoriesData));
 
-    // Render index page with fetched data
-    response.render('stories', {
-      stories: dataConverter(StoriesData),
-    });
+//     // Render index page with fetched data
+//     response.render('stories', {
+//       stories: dataConverter(StoriesData),
+//     });
 
     
-  } catch (error) {
-    console.error(error);
-    response.status(500).send("Internal Server Error");
-  }
-});
+//   } catch (error) {
+//     console.error(error);
+//     response.status(500).send("Internal Server Error");
+//   }
+// });
+
+
+
 
 // Define route for playlist page using the :slug
 app.get('/:slug', async (request, response) => {
@@ -97,13 +107,15 @@ app.get('/:slug', async (request, response) => {
 
     const dataFinal = dataConverter(data)
 
+    console.log(API)
 
-    const stories = Array.isArray(dataFinal[0].stories) ? dataFinal[0].stories : [];
+
     console.log(dataFinal[0]);
 
     response.render('playlist', {
       playlist: dataFinal[0],
-      stories: stories,
+      stories: dataFinal[0].stories || [], // Handle the case when 'stories' is undefined
+      // language: dataFinal[0].language_id.language,
     });
   } catch (error) {
     console.error(error);
@@ -116,7 +128,7 @@ app.get('/:slug', async (request, response) => {
 
 app.get('/:playlistSlug/:storySlug', async (request, response) => {
   try {
-    const API = `${apiUrl}/tm_story?filter={"slug":"${request.params.storySlug}"}&fields=title,description,slug,image,video,playlist.tm_playlist_id.title,playlist.tm_playlist_id.slug`;
+    const API = `${apiUrl}/tm_story?filter={"slug":"${request.params.storySlug}"}&fields=title,description,slug,image,video,playlist.tm_playlist_id.title,playlist.tm_playlist_id.slug, playlist.tm_playlist_id.description,`;
     // Fetch story data and playlist data concurrently
     const [data] = await Promise.all([
       fetch(API).then(res => res.json()),
