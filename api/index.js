@@ -111,15 +111,13 @@ app.get('/:slug', async (request, response) => {
 
     language_id.language, 
     language_id.flag.id`;
+    console.log(API);
     // Fetch playlist data and story data concurrently
     const [data] = await Promise.all([
       fetch(API).then(res => res.json()),
     ]);
 
     const dataFinal = dataConverter(data)
-
-
-
 
     console.log(dataFinal[0].stories);
 
