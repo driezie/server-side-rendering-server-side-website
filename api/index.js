@@ -1,154 +1,132 @@
-// Import required modules
-const path = require('path');
-const express = require('express');
-const fetch = require('node-fetch');
+/*
+  Dit is de server van de applicatie.
+  Hier worden alle routes gedefinieerd en
+  wordt de server opgestart.
+*/
 
-// Create Express app
+import { createServer } from "http";
+import express from "express";
+import { Server as SocketIOServer } from "socket.io";
+import path from "path";
+import fetch from "node-fetch";
+
+const httpServer = createServer();
+const io = new SocketIOServer(httpServer);
 const app = express();
 
-// Configure view engine and views directory
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));
 
-// Define API base URL
 const apiUrl = "https://fdnd-agency.directus.app/items";
 
-// Function to convert API response data
+/* 
+  Hier worden de arrays die uit direcus komen 
+  geconverteerd. Hij haalt hierbij de .data 
+  weg uit de array en geeft de data terug.
+*/
 function dataConverter(request) {
+  console.log("Data succesvol geconverteerd: ", request.data)
   return request.data;
 }
 
 /*
-  Define route for favicon.ico to prevent the browser from making an additional request for the favicon
+  Door deze functie krijgt de favicon.ico een 
+  "No content" error. Dit is goed omdat deze 
+  issue bij mij soms opeens in de slug staat.
 */
+
 app.get('/favicon.ico', (req, res) => {
-  res.status(204); // No content response
+  res.status(204);
 });
 
+// Lessons page
 app.get('/', async (request, response) => {
   try {
-    // Fetch story data and playlist data concurrently
-    const [playlistData, StoriesData] = await Promise.all([
+    const [playlistData, storiesData] = await Promise.all([
       fetch(apiUrl + '/tm_playlist').then(res => res.json()),
       fetch(apiUrl + '/tm_story').then(res => res.json()),
     ]);
 
-    console.log(dataConverter(playlistData));
-    console.log(dataConverter(StoriesData));
+    // Haalt de .data uit de 2 arrays
+    const dataFinalPlaylist = dataConverter(playlistData)
+    const dataFinalStories = dataConverter(storiesData)
 
-    // Render index page with fetched data
+
     response.render('index', {
-      // playlist: dataConverter(playlistData),
-      // stories: dataConverter(StoriesData),
+      // Nog mee bezig, wil eerst zonder data de layout mooi maken
+      // playlist: dataFinalPlaylist,
+      // stories: dataFinalStories,
     });
 
-    
-  } catch (error) {
-    console.error(error);
-    response.status(500).send("Internal Server Error");
-  }
-}
-);
-
-// Define route for homepage
-app.get('/playlists', async (request, response) => {
-  try {
-    // Fetch story data and playlist data concurrently
-    const [Data] = await Promise.all([
-      fetch(apiUrl + '/tm_playlist').then(res => res.json()),
-    ]);
-
-    console.log(dataConverter(Data));
-
-    // Render index page with fetched data
-    response.render('playlists', {
-      playlist: dataConverter(Data),
-    });
-
-    
   } catch (error) {
     console.error(error);
     response.status(500).send("Internal Server Error");
   }
 });
 
-// app.get('/stories', async (request, response) => {
-//   try {
-//     // Fetch story data and playlist data concurrently
-//     const [StoriesData] = await Promise.all([
-//       fetch(apiUrl + '/tm_story').then(res => res.json()),
-//     ]);
-
-//     console.log(dataConverter(StoriesData));
-
-//     // Render index page with fetched data
-//     response.render('stories', {
-//       stories: dataConverter(StoriesData),
-//     });
-
-    
-//   } catch (error) {
-//     console.error(error);
-//     response.status(500).send("Internal Server Error");
-//   }
-// });
-
-
-
-
-// Define route for playlist page using the :slug
-app.get('/:slug', async (request, response) => {
+// Lijst met Playlists
+app.get('/playlists', async (request, response) => {
   try {
-    const API = `${apiUrl}/tm_playlist?filter={"slug":"${request.params.slug}"}&fields=
-    title,
-    description,
-    slug,
-    
-    stories.tm_story_id.title,
-    stories.tm_story_id.summary,
-    stories.tm_story_id.image,
-    stories.tm_story_id.slug,
+    const API =  `${apiUrl}/tm_playlist`;
+    console.log("Api link aangemaakt: " ,API);
 
-    language_id.language, 
-    language_id.flag.id`;
-    console.log(API);
-    // Fetch playlist data and story data concurrently
     const [data] = await Promise.all([
       fetch(API).then(res => res.json()),
     ]);
 
+    // Haalt de .data uit de array
     const dataFinal = dataConverter(data)
 
-    console.log(dataFinal[0].stories);
+    response.render('playlists', {
+      playlist: dataFinal,
+    });
 
+  } catch (error) {
+    console.error(error);
+    response.status(500).send("Internal Server Error");
+  }
+});
+
+// Lijst met stories uit de gekozen playlist
+app.get('/:slug', async (request, response) => {
+  try {
+    const API = `${apiUrl}/tm_playlist?filter={"slug":"${request.params.slug}"}&fields=title,description,slug,stories.tm_story_id.title,stories.tm_story_id.summary,stories.tm_story_id.image,stories.tm_story_id.slug,language_id.language,language_id.flag.id`;
+    console.log("Api link aangemaakt: " ,API);
+
+    const [data] = await Promise.all([
+      fetch(API).then(res => res.json()),
+    ]);
+
+    // Haalt de .data uit de array
+    const dataFinal = dataConverter(data)
+
+    // Laad de playlist pagina met de data
     response.render('playlist', {
       playlist: dataFinal[0],
-      stories: dataFinal[0].stories || [], // Handle the case when 'stories' is undefined
-      language: dataFinal[0].language_id || [], // Handle the case when 'language' is undefined
+      stories: dataFinal[0].stories || [],
+      language: dataFinal[0].language_id || [],
     });
   } catch (error) {
     console.error(error);
     response.status(500).send("Internal Server Error");
   }
-  
+
 });
 
-// Define route for story page using the :slug from the story and the slug from the playlist
-
+// Stories pagina waarin alle storie informatie staat
 app.get('/:playlistSlug/:storySlug', async (request, response) => {
   try {
     const API = `${apiUrl}/tm_story?filter={"slug":"${request.params.storySlug}"}&fields=title,description,slug,image,video,playlist.tm_playlist_id.title,playlist.tm_playlist_id.slug, playlist.tm_playlist_id.description,`;
-    // Fetch story data and playlist data concurrently
+    console.log("Api link aangemaakt: " ,API);
+
     const [data] = await Promise.all([
       fetch(API).then(res => res.json()),
     ]);
 
-    console.log(API);
-
+    // Haalt de .data uit de array
     const dataFinal = dataConverter(data)
 
-    console.log(dataFinal[0]);
-
+    // Laad de story pagina met de data
     response.render('story', {
       story: dataFinal[0],
     });
@@ -156,20 +134,46 @@ app.get('/:playlistSlug/:storySlug', async (request, response) => {
     console.error(error);
     response.status(500).send("Internal Server Error");
   }
-
-  
-}
-
-);
-
-
-// Set port for the server
-app.set("port", process.env.PORT || 8080);
-
-// Start the server
-app.listen(app.get("port"), () => {
-  console.log(`Application started on http://localhost:${app.get("port")}`);
 });
 
-// Export the Express app
+/* 
+  Hier niet aanzitten. Dit zorgt er allemaal 
+  voor dat de server kan werken met Vercel issues
+*/
+
+const port = process.env.PORT || 8080;
+
+httpServer.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
+
+/*
+  Checkt of er een error is, als er een error 
+  EADDRINUSE is probeert hij een andere port
+*/
+httpServer.on("error", (e) => {
+  if (e.code === "EADDRINUSE") {
+    const address = httpServer.address();
+    if (address !== null && typeof address !== "string") {
+      const currentPort = address.port;
+      const newPort = currentPort + 1;
+      console.error(`Address ${currentPort} already in use, retrying on port ${newPort} in a few seconds...`);
+      setTimeout(() => {
+        httpServer.listen(newPort);
+      }, 1000);
+    } else {
+      console.error(`Unable to retrieve server.`);
+    }
+  }
+});
+
+// Exporteer de app
 module.exports = app;

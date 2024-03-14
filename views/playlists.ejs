@@ -13,27 +13,7 @@
 
   <div class="card-grid card-grid-3">
     <% playlist.forEach(item => { %>
-        <div class="card card-playlist">
-          <img class="logo" src="https://fdnd-agency.directus.app/assets/<%= item.image %>" alt="<%= item.title %>">
-          <div class="text-content">
-            <div class="title-content">
-              <h3><%= item.title %></h3>
-            </div>
-
-            <div class="actions">
-              <a href="<%= item.slug %>" class="play">
-                <img src="/svg/play-orange.svg" alt="play button">
-                <span>3 min. 5 sec</span>
-              </a>
-              <div class="additional-actions">
-                <a href="">
-                  <img src="/svg/heart.svg" alt="cloud save">
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <%- include('./components/playlist-card',{item: item}) %>
     <% }) %>
   </div>
 
